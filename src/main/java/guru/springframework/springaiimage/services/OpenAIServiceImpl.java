@@ -2,13 +2,23 @@ package guru.springframework.springaiimage.services;
 
 import guru.springframework.springaiimage.model.Question;
 import lombok.RequiredArgsConstructor;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.content.Media;
 import org.springframework.ai.image.ImageModel;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.image.ImageResponse;
+import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.OpenAiImageOptions;
+import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MimeTypeUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Base64;
+import java.util.List;
 
 /**
  * Created by jt, Spring Framework Guru.
@@ -19,15 +29,34 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     private final ImageModel imageModel;
 
+    private final ChatModel  chatModel;
+
+    @Override
+    public String getDescription(MultipartFile file) {
+
+        OpenAiChatOptions chatOptions =OpenAiChatOptions.builder()
+                .model("gpt-5.4")
+                .build();
+
+        UserMessage userMessage = UserMessage.builder()
+                .text("return the description of the image in a json format")
+                .media(new Media(MimeTypeUtils.IMAGE_JPEG, file.getResource()))
+                .build();
+
+        ChatResponse response = chatModel.call(new Prompt(List.of(userMessage),chatOptions));
+
+
+        return response.getResult().getOutput().getText();
+    }
 
     @Override
     public byte[] getImage(Question question) {
 
         OpenAiImageOptions options = OpenAiImageOptions.builder()
-                .withHeight(1024)
+                .height(1024)
                 .width(1024)
-                .withModel("gpt-image-1.5")
-                .withQuality("high")
+                .model("gpt-image-1.5")
+                .quality("high")
                 .build();
 
         ImagePrompt imagePrompt = new ImagePrompt(question.question(),options);
@@ -36,6 +65,7 @@ public class OpenAIServiceImpl implements OpenAIService {
 
         return Base64.getDecoder().decode(imageCall.getResult().getOutput().getB64Json());
     }
+
 }
 
 

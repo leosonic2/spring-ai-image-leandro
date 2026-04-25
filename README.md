@@ -20,8 +20,8 @@ This project was built as part of the Udemy course:
 | Technology        | Version       |
 |-------------------|---------------|
 | Java              | 21            |
-| Spring Boot       | 3.3.6         |
-| Spring AI (BOM)   | 1.0.0-M5      |
+| Spring Boot       | 3.4.1         |
+| Spring AI (BOM)   | 1.0.0         |
 | Lombok            | —             |
 | Maven             | Wrapper included |
 
@@ -38,6 +38,62 @@ src/main/java/guru/springframework/springaiimage
     ├── OpenAIService.java             # Service interface
     └── OpenAIServiceImpl.java         # OpenAI image generation implementation
 ```
+
+## 🔌 API Endpoints — `QuestionController`
+
+The `QuestionController` is a Spring REST controller that exposes two endpoints for AI-powered image operations:
+
+### `POST /image` — Generate an Image from a Text Prompt
+
+Generates a **1024×1024 PNG image** using OpenAI's image generation model based on a text prompt.
+
+- **Content-Type:** `application/json`
+- **Response:** `image/png` (raw binary)
+
+**Request body:**
+
+```json
+{
+  "question": "A futuristic city skyline at sunset"
+}
+```
+
+**Example (cURL):**
+
+```bash
+curl -X POST http://localhost:8080/image \
+  -H "Content-Type: application/json" \
+  -d '{"question":"A futuristic city skyline at sunset"}' \
+  --output image.png
+```
+
+---
+
+### `POST /vision` — Describe an Image Using AI Vision
+
+Uploads an image file and returns an **AI-generated JSON description** of its contents using OpenAI's chat vision capabilities.
+
+- **Content-Type:** `multipart/form-data`
+- **Response:** `application/json`
+
+**Form field:** `file` — the image to analyze (JPEG recommended).
+
+**Example (cURL):**
+
+```bash
+curl -X POST http://localhost:8080/vision \
+  -F "file=@photo.jpg"
+```
+
+**Sample response:**
+
+```json
+{
+  "description": "A golden retriever sitting on a grassy field under a blue sky."
+}
+```
+
+---
 
 ## ⚙️ Prerequisites
 
@@ -82,4 +138,3 @@ src/main/java/guru/springframework/springaiimage
 ## 📄 License
 
 This project is intended for **educational purposes only**. All course content and original code are credited to [John Thompson](https://www.linkedin.com/in/springguru/).
-
