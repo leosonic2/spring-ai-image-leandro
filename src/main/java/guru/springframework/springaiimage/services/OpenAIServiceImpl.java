@@ -19,6 +19,7 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     private final ImageModel imageModel;
 
+
     @Override
     public byte[] getImage(Question question) {
 
@@ -26,6 +27,7 @@ public class OpenAIServiceImpl implements OpenAIService {
                 .withHeight(1024)
                 .width(1024)
                 .withModel("gpt-image-1.5")
+                .withQuality("high")
                 .build();
 
         ImagePrompt imagePrompt = new ImagePrompt(question.question(),options);
