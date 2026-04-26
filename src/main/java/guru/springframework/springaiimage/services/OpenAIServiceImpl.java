@@ -10,9 +10,14 @@ import org.springframework.ai.content.Media;
 import org.springframework.ai.image.ImageModel;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.image.ImageResponse;
+import org.springframework.ai.openai.OpenAiAudioSpeechModel;
+import org.springframework.ai.openai.OpenAiAudioSpeechOptions;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.ai.openai.api.OpenAiAudioApi;
+import org.springframework.ai.openai.audio.speech.SpeechPrompt;
+import org.springframework.ai.openai.audio.speech.SpeechResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +36,8 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     private final ChatModel  chatModel;
 
+    private final OpenAiAudioSpeechModel speechModel;
+
     @Override
     public String getDescription(MultipartFile file) {
 
@@ -47,6 +54,22 @@ public class OpenAIServiceImpl implements OpenAIService {
 
 
         return response.getResult().getOutput().getText();
+    }
+
+    @Override
+    public byte[] getSpeech(Question question) {
+        OpenAiAudioSpeechOptions options = OpenAiAudioSpeechOptions.builder()
+                .model(OpenAiAudioApi.TtsModel.TTS_1_HD.value)
+                .voice(OpenAiAudioApi.SpeechRequest.Voice.ALLOY)
+                .speed(1.0f)
+                .responseFormat(OpenAiAudioApi.SpeechRequest.AudioResponseFormat.MP3)
+                .build();
+        String textInPortuguese = "[Fale em português do Brasil] " + question.question();
+        SpeechPrompt speechPrompt = new SpeechPrompt(textInPortuguese, options);
+
+        SpeechResponse speechResponse = speechModel.call(speechPrompt);
+
+        return speechResponse.getResult().getOutput();
     }
 
     @Override

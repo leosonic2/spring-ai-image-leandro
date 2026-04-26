@@ -16,19 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RequiredArgsConstructor
 @RestController
-public class QuestionController {
+public class VoiceQuestionController {
 
     private final OpenAIService openAIService;
 
-    @PostMapping(value = "/vision",
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
-            produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> description(@RequestPart("file") MultipartFile file){
-        return ResponseEntity.ok(openAIService.getDescription(file));
-    }
 
-    @PostMapping(value = "/image", produces = MediaType.IMAGE_PNG_VALUE)
-    public byte[] getImage(@RequestBody Question question) {
-        return openAIService.getImage(question);
+    @PostMapping(value = "/talk", produces = "audio/mpeg")
+    public byte[] getAudio(@RequestBody Question question) {
+        return openAIService.getSpeech(question);
     }
 }

@@ -13,4 +13,6 @@ public interface OpenAIService {
     byte[] getImage(Question question);
 
     String getDescription(MultipartFile file);
+
+    byte[] getSpeech(Question question);
 }

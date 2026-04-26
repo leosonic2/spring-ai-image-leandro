@@ -1,6 +1,6 @@
-# Spring AI Image Generation
+# Spring AI Image & Voice Generation
 
-A Spring Boot application that demonstrates **AI-powered image generation** using [Spring AI](https://spring.io/projects/spring-ai) and the OpenAI API.
+A Spring Boot application that demonstrates **AI-powered image generation, image vision analysis, and text-to-speech** using [Spring AI](https://spring.io/projects/spring-ai) and the OpenAI API.
 
 > ⚠️ **Educational Purpose Only** — This project is part of the course material for hands-on learning and experimentation.
 
@@ -17,33 +17,36 @@ This project was built as part of the Udemy course:
 
 ## 🛠️ Tech Stack
 
-| Technology        | Version       |
-|-------------------|---------------|
-| Java              | 21            |
-| Spring Boot       | 3.4.1         |
-| Spring AI (BOM)   | 1.0.0         |
-| Lombok            | —             |
+| Technology        | Version          |
+|-------------------|------------------|
+| Java              | 21               |
+| Spring Boot       | 3.4.1            |
+| Spring AI (BOM)   | 1.0.0            |
+| Lombok            | —                |
 | Maven             | Wrapper included |
 
 ## 📁 Project Structure
 
 ```
 src/main/java/guru/springframework/springaiimage
-├── SpringAiImageApplication.java      # Application entry point
+├── SpringAiImageApplication.java        # Application entry point
 ├── controllers/
-│   └── QuestionController.java        # REST controller for image requests
+│   ├── ImageQuestionController.java     # REST controller for image generation & vision
+│   └── VoiceQuestionController.java     # REST controller for text-to-speech
 ├── model/
-│   └── Question.java                  # Request record (question prompt)
+│   └── Question.java                    # Request record (question prompt)
 └── services/
-    ├── OpenAIService.java             # Service interface
-    └── OpenAIServiceImpl.java         # OpenAI image generation implementation
+    ├── OpenAIService.java               # Service interface
+    └── OpenAIServiceImpl.java           # OpenAI implementation (image, vision, speech)
 ```
 
-## 🔌 API Endpoints — `QuestionController`
+## 🔌 API Endpoints
 
-The `QuestionController` is a Spring REST controller that exposes two endpoints for AI-powered image operations:
+### `ImageQuestionController`
 
-### `POST /image` — Generate an Image from a Text Prompt
+Handles AI-powered image generation and image vision analysis.
+
+#### `POST /image` — Generate an Image from a Text Prompt
 
 Generates a **1024×1024 PNG image** using OpenAI's image generation model based on a text prompt.
 
@@ -69,7 +72,7 @@ curl -X POST http://localhost:8080/image \
 
 ---
 
-### `POST /vision` — Describe an Image Using AI Vision
+#### `POST /vision` — Describe an Image Using AI Vision
 
 Uploads an image file and returns an **AI-generated JSON description** of its contents using OpenAI's chat vision capabilities.
 
@@ -91,6 +94,36 @@ curl -X POST http://localhost:8080/vision \
 {
   "description": "A golden retriever sitting on a grassy field under a blue sky."
 }
+```
+
+---
+
+### `VoiceQuestionController`
+
+Handles AI-powered text-to-speech conversion.
+
+#### `POST /talk` — Convert Text to Speech (Brazilian Portuguese)
+
+Converts a text prompt into an **MP3 audio file** using OpenAI's TTS (Text-to-Speech) model (`tts-1-hd`) with the **Alloy** voice. The output is always spoken in **Brazilian Portuguese**.
+
+- **Content-Type:** `application/json`
+- **Response:** `audio/mpeg` (raw binary)
+
+**Request body:**
+
+```json
+{
+  "question": "Olá, como vai você?"
+}
+```
+
+**Example (cURL):**
+
+```bash
+curl -X POST http://localhost:8080/talk \
+  -H "Content-Type: application/json" \
+  -d '{"question":"Olá, como vai você?"}' \
+  --output speech.mp3
 ```
 
 ---
