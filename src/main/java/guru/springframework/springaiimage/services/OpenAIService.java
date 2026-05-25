@@ -15,4 +15,6 @@ public interface OpenAIService {
     String getDescription(MultipartFile file);
 
     byte[] getSpeech(Question question);
+
+    byte[] splitAudio(MultipartFile file);
 }
